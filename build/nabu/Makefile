@@ -16,26 +16,11 @@ all::
 include Make.rules
 
 # ...but don't try to make the disk image until after the subdirs are done!
-all:: c.dsk
+all:: copy
 
 # make sure all subdirs are built before we make the disk image
-c.dsk:: $(ALL_DIRS)
-	rm -f $@
-	LC_CTYPE=C tr '\0' '\345' < /dev/zero | dd of=$@ bs=8M count=1 conv=fsync iflag=fullblock
-	cpmcp -f $(DISKDEF) $@ */*.com 0:
-	#cpmls -f $(DISKDEF) $@
-
-NDSK_B.img:: $(ALL_DIRS)
-	rm -f $@
-	LC_CTYPE=C tr '\0' '\345' < /dev/zero | dd of=$@ bs=8M count=1 conv=fsync iflag=fullblock
-	cpmcp -f nshd8 $@ */*.com 0:
-	#cpmls -f nshd8 $@
-
-store: c.dsk
-	cp $^ $(STOREDIR)
-
-ishkur: NDSK_B.img
-	cp $^ $(ISHKURDIR)
+copy: $(ALL_DIRS)
+	find . -name "*.com" -exec cp -fv {} $(STOREDIR)/ \;
 
 clean::
 	rm -f c.dsk
