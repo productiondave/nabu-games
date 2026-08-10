@@ -1,4 +1,4 @@
-// #define BIN_TYPE BIN_CPM <---- DEFINED IN MAKEFILE
+//#define BIN_TYPE BIN_CPM// <---- DEFINED IN MAKEFILE
 #define DISABLE_HCCA_RX_INT
 #define DISABLE_CURSOR
 
@@ -7,6 +7,8 @@
 #include "nabu-games.h"
 #include "tetris-nt.h"
 #include "tetris.h"
+
+#include <stdint.h>
 
 uint8_t block[8] = {0x7E,0xFF,0xC3,0xDB,0xDB,0xC3,0xFF,0x7E}; /*1  - 0x0c - tetris block   1 CYAN I*/
                     //   0     8    10    18    20    28   30     38    40    48    50    58    60    68   70    78     80    88    90    98    A0    A8    B0    B8    C0    C8    D0    D8    E0   E8    F0    F8
@@ -162,23 +164,17 @@ uint8_t checkCompletedLines(uint8_t *lines) __z88dk_fastcall {
     return completed_lines;
 }
 
+int bag[7] = {0,1,2,3,4,5,6};
+int current_position = 6;
+
 int new_block(void) {
-    //Reset used blocks if we hav
-    if (block_count == 7) {
-        for(uint8_t i=0; i<7; i++) {
-            used_blocks[i] = 0;
-        }
-        block_count = 0;
-    }
-    uint8_t t;
-    while(true) {
-        t = rand()%7;   // choose first block
-        if (!used_blocks[t])
-            break;
-    }
-    block_count ++;
-    used_blocks[t] = 1;
-    return t;
+  if (current_position < 0) current_position = 6;
+  int pos = rand() % (current_position + 1);
+  int current_item = bag[pos];
+  bag[pos] = bag[current_position];
+  bag[current_position] = current_item;
+  current_position --;
+  return current_item;
 }
 
 /* Get and Set High Score is broken */
@@ -241,7 +237,8 @@ void play(void) {
             if (ticks % 7 == 0) {
                 nt_handleNote();
             }
-            if (ticks % 6 == 0) {  //only take joystick input every 6th tick (every 100ms)
+
+            if (ticks & 6 == 6) {  //only take joystick input every 6th tick (every 100ms)
                 if (getJoyStatus(0) & Joy_Left) {
                     clearTet(x,y,t,f);
                     if(isSpaceFree(x-1,y,t,f)) {
