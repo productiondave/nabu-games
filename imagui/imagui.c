@@ -6,6 +6,7 @@
 #define DISABLE_CURSOR
 #define byte uint8_t
 #define ITEMS_PER_PAGE 17
+#define PARENT_ITEMS_PER_PAGE 8   // Must be 8 so the description fits below.
 
 #include "NABU-LIB.h"
 #include "RetroNET-IAControl.h"
@@ -27,6 +28,8 @@ byte news_length = 0;
 byte news_id = 0;
 byte page_num = 1;
 byte num_pages = 1;
+byte parent_page_num = 1;   // 1-based
+byte parent_num_pages = 1;  // total number of parent pages
 
 /*
  * Lifted from DJs code drop in discord.
@@ -270,23 +273,49 @@ void update_channels(void) {
     printAtLocationBuf(31-3,22,namebuf);
 }
 
+/* Draws the current page of parent channels (max 8 so the description fits) */
+void update_parent_channels(void) {
+    clear_main_panel();
+    for(i=(parent_page_num-1) * PARENT_ITEMS_PER_PAGE; i<parent_page_num * PARENT_ITEMS_PER_PAGE; i++) {
+        if (i<channel_length) {
+            ia_getParentName(i, namebuf);
+            printAtLocationBuf(2, 3+(i%PARENT_ITEMS_PER_PAGE), namebuf);
+        }
+    }
+    vdp_setCharAtLocationBuf(1,22,0x1C);
+    printAtLocationBuf(2,22,"Select");
+    if (parent_num_pages > 1) {
+        vdp_setCharAtLocationBuf(15,22,0x1D);
+        printAtLocationBuf(16,22,"Next");
+        sprintf(namebuf, "%u/%u", parent_page_num, parent_num_pages);
+        printAtLocationBuf(31-3,22,namebuf);
+    }
+}
+
 /* Moves the cursor for channel navigation between items
  * SPELLING Notwithstanding
  */
 void hilight_channel(void) {
-    if (state == 2) {
-        if (channel_id >= page_num * 17) {
+    byte ps = (state == 1) ? PARENT_ITEMS_PER_PAGE : ITEMS_PER_PAGE;
+    if (state == 1) {
+        byte new_page = channel_id / PARENT_ITEMS_PER_PAGE + 1;
+        if (new_page != parent_page_num) {
+            parent_page_num = new_page;
+            update_parent_channels();
+        }
+    } else if (state == 2) {
+        if (channel_id >= page_num * ITEMS_PER_PAGE) {
             page_num ++;
             update_channels();
         }
-        if (channel_id < page_num * 17 - 17) {
+        if (channel_id < page_num * ITEMS_PER_PAGE - ITEMS_PER_PAGE) {
             page_num --;
             if (page_num == 0) page_num = 1;
             update_channels();
         }
     }
-    vdp_setCharAtLocationBuf(1,(prev_channel_id%ITEMS_PER_PAGE)+3,0x20);
-    vdp_setCharAtLocationBuf(1,(channel_id%ITEMS_PER_PAGE)+3,0x0C);
+    vdp_setCharAtLocationBuf(1,(prev_channel_id%ps)+3,0x20);
+    vdp_setCharAtLocationBuf(1,(channel_id%ps)+3,0x0C);
     prev_channel_id = channel_id;
     // If we are in the parents then show the description below.
     if (state == 1) {
@@ -372,15 +401,13 @@ void load_parent_channels(void) {
     ia_getCurrentDateTimeStr("dd/MM/yyyy HH:mm",17,namebuf);
     shift(namebuf);
     printAtLocationBuf(31-16,1,namebuf);
-    clear_main_panel();
     channel_length = ia_getParentCount();
-    for(i=0; i<channel_length; i++) {
-        ia_getParentName(i,namebuf);
-        printAtLocationBuf(2, 3+i, namebuf);
-    }
-    vdp_setCharAtLocationBuf(1,22,0x1C);
-    printAtLocationBuf(2,22,"Select");
-    channel_id = 0;
+    parent_num_pages = (channel_length + PARENT_ITEMS_PER_PAGE - 1) / PARENT_ITEMS_PER_PAGE;
+    if (parent_num_pages == 0) parent_num_pages = 1;
+    if (channel_id >= channel_length) channel_id = 0;
+    parent_page_num = channel_id / PARENT_ITEMS_PER_PAGE + 1;
+    prev_channel_id = channel_id;
+    update_parent_channels();
     hilight_channel();
 }
 
@@ -604,13 +631,16 @@ void main(void) {
                         state = 0;
                         current_menu_id = 0;
                         hilight_main_menu();
-                        vdp_setCharAtLocationBuf(1,prev_channel_id+3,0x20);
+                        vdp_setCharAtLocationBuf(1,(prev_channel_id%PARENT_ITEMS_PER_PAGE)+3,0x20);
                         load_news();
                         break;
                     } 
                 } else if ( joy == Joy_Down ) {
                     channel_id++;
                     if (channel_id > channel_length-1) channel_id = 0;
+                } else if ( joy == Joy_Right ) {
+                    channel_id = parent_page_num * PARENT_ITEMS_PER_PAGE;
+                    if (channel_id >= channel_length) channel_id = 0;
                 } else if ( joy == Joy_Button ) {
                     state = 2;
                     parent_id = channel_id;
@@ -636,10 +666,10 @@ void main(void) {
                     if (channel_id > channel_length -1) channel_id = 0;
                 } else if (joy == Joy_Right) {
                     channel_id = (page_num + 1) * ITEMS_PER_PAGE - ITEMS_PER_PAGE;
-                    if (channel_id > channel_length) channel_id = 0;
+                    if (channel_id >= channel_length) channel_id = 0;
                 } else if (joy == Joy_Left) {
                     state = 1;
-                    channel_id = 0;
+                    channel_id = parent_id;
                     color_main_menu();
                     load_parent_channels();
                     break;
