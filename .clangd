@@ -1,0 +1,46 @@
+CompileFlags:
+  Add:
+    # 1. Prevent clangd from pulling in your Linux system headers (/usr/include)
+    - "-nostdinc"
+
+    # 2. z88dk headers (NABU-LIB uses -compiler=sdcc by default)
+    - "-isystem/home/davelatham/dev/z80/z88dk/include/_DEVELOPMENT/sdcc"
+    - "-isystem/home/davelatham/dev/z80/z88dk/include"
+
+    # 3. Your NABU-LIB include path
+    - "-I/home/davelatham/dev/z80/nabu-games/.clangd-stub"
+    - "-I/home/davelatham/dev/z80/NABU-LIB/NABULIB"
+
+    # 4. Target & compiler macros for NABU + SDCC
+    - "-DBIN_TYPE=BIN_CPM"
+    - "-D__NABU__"
+    - "-D__NABU"
+    - "-D__Z80"
+    - "-D__SDCC"
+
+    - "-I/home/davelatham/dev/z80/nabu-games/include"
+
+    # 5. Stub out SDCC / z88dk non-standard C extensions
+    - "-D__preserves_regs(...)="
+    - "-D__banked="
+    - "-D__nonbanked="
+    - "-D__vasmallc="
+    - "-D__z88dk_deprecated="
+    - "-D__z88dk_sdccdecl="
+    - "-D__z88dk_fastcall="
+    - "-D__z88dk_callee="
+    - "-D__smallc="
+    - "-D__at(x)="
+    - "-D__naked="
+    - "-D__critical="
+    - "-D__interrupt="
+    - "-D__reentrant="
+    - "-D__using(x)="
+
+    # 6. Force 16-bit ints and pointers to match Z80 architecture
+    - "--target=avr"
+
+Diagnostics:
+  Suppress:
+    # NABU-LIB.h directly #includes NABU-LIB.c, which can trigger unused/inline warnings
+    - "pp_including_mainfile_in_preamble"

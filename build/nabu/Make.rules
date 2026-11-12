@@ -7,7 +7,7 @@ CPPFLAGS+=-I$(TARGET_LIB_DIR)
 
 DISKDEF=naburn
 
-NABUCFLAGS = +nabu -vn -DBIN_TYPE=BIN_HOMEBREW --list -m -create-app -compiler=sdcc
+NABUCFLAGS = +nabu -vn -DBIN_TYPE=BIN_HOMEBREW --list -m -create-app -compiler=sdcc -Cs--disable-warning -Cs283
 
 -include $(TOP)/Make.local
 include $(TOP)/Make.rules

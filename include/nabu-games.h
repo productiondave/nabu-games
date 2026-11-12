@@ -1,8 +1,9 @@
-#ifndef NABUGAMESLIB
-#define NABUGAMESLIB
+#ifndef _H_NABUGAMESLIB
+#define _H_NABUGAMESLIB
 
-#include <strings.h>
+#include <stdint.h>
 #include "nabu-games-patterns.h"
+#include "NABU-LIB.h"
 
 /* Extra function needed but not found in upstream nabu-lib*/
 void vdp_setPatternColor(uint8_t color);
