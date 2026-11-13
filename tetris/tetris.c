@@ -454,7 +454,7 @@ bool menu(void) {
     printAtLocationBuf(13-(8/2),17,"ESC QUIT");
     printAtLocationBuf(13-(10/2),19,"PRODUCTION");
     printAtLocationBuf(13-(4/2),20,"DAVE");
-    printAtLocationBuf(13-(4/2),21,"V4.0");
+    printAtLocationBuf(13-(4/2),21,"V4.1");
     vdp_waitVDPReadyInt();
     vdp_refreshViewPort();
 

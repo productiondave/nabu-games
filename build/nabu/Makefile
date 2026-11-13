@@ -21,7 +21,10 @@ all:: copy
 
 # make sure all subdirs are built before we make the disk image
 copy: $(ALL_DIRS)
-	find . -name "*.com" -exec cp -fv {} $(STOREDIR)/ \;
+	find . -name "*.com" | while read f; do \
+		n=$$(basename "$$f" | tr 'a-z' 'A-Z'); \
+		cp -fv "$$f" $(STOREDIR)/"$$n"; \
+	done
 
 clean::
 	rm -f c.dsk
