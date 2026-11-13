@@ -4,7 +4,7 @@
 
 * Snake
 * Tetris
-* Invaders ?
+* Invaders
 
 ## Snake
 
@@ -44,15 +44,13 @@ it down.
 
 Use the joystick to play.  LEFT AND RIGHT AND FIRE TO SHOOT.  That's it.
 
-## NABU-LIB
+## libnabu
 
-### OLD DEPENDENCY
-> The games in this repo depends on NABU-LIB developed by DJSures. [https://github.com/DJSures/NABU-LIB](https://github.com/DJSures/NABU-LIB)
+The NABU builds of the games in this repo depend on libnabu, which is used to
+compile them: [https://github.com/productiondave/libnabu](https://github.com/productiondave/libnabu)
 
-More recently, I have had to split away from NABU-LIB to support Graphics Mode
-1 and other compatibility features for the Z80-Retro! and Z180-Nouveau
-projects.  You can find my copy of NABU-LIB used for compiling these games at
-[https://github.com/linuxplayground/NABU-LIB.git](https://github.com/linuxplayground/NABU-LIB.git)
+libnabu is derived from NABU-LIB developed by DJSures
+([https://github.com/DJSures/NABU-LIB](https://github.com/DJSures/NABU-LIB)).
 
 ## z80retro-lib
 
