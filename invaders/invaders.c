@@ -57,7 +57,7 @@ void draw_aliens(void) {
             // figure out new x tile location.
             invaders[i][j].px += dir;
 
-            tx = invaders[i][j].px / 4;
+            tx = invaders[i][j].px >> 2;
             invaders[i][j].tx = tx;
             ty = invaders[i][j].ty;
 
@@ -107,8 +107,8 @@ void drop_aliens(void) {
 }
 
 bool bullet_hit_detection(void) {
-    bullet_t_x = bulletx / 8;
-    bullet_t_y = bullety / 8;
+    bullet_t_x = bulletx >> 3;
+    bullet_t_y = bullety >> 3;
     uint8_t apn =  _vdp_textBuffer[bullet_t_y * 32 + bullet_t_x]; //Alien pattern name
     if (apn == 0) {
         return false;
@@ -167,7 +167,7 @@ bool bullet_hit_detection(void) {
                             ayWrite(AY_ENV_SHAPE, AY_ENV_SHAPE_FADE_OUT);
                         }
 
-                        game_speed = 2 + (max_invaders/8);
+                        game_speed = 2 + (max_invaders >> 3);
                         return true;
                     }
                 }
@@ -187,8 +187,8 @@ bool bullet_hit_detection(void) {
 }
 
 bool bomb_hit_detection(void) {
-    bomb_t_x = bombx / 8;
-    bomb_t_y = bomby / 8;
+    bomb_t_x = bombx >> 3;
+    bomb_t_y = bomby >> 3;
     uint8_t apn =  _vdp_textBuffer[bomb_t_y * 32 + bomb_t_x];
     if (apn == 0) {
         return false;

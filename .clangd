@@ -7,9 +7,9 @@ CompileFlags:
     - "-isystem/home/davelatham/dev/z80/z88dk/include/_DEVELOPMENT/sdcc"
     - "-isystem/home/davelatham/dev/z80/z88dk/include"
 
-    # 3. Your NABU-LIB include path
+    # 3. libnabu generated headers (NABU-LIB.h etc.)
     - "-I/home/davelatham/dev/z80/nabu-games/.clangd-stub"
-    - "-I/home/davelatham/dev/z80/NABU-LIB/NABULIB"
+    - "-I/home/davelatham/dev/z80/libnabu/gen/include"
 
     # 4. Target & compiler macros for NABU + SDCC
     - "-DBIN_TYPE=BIN_CPM"

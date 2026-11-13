@@ -1,13 +1,14 @@
 include $(TOP)/Make.default
 
-TARGET_LIB_DIR=$(TOP)/../NABU-LIB/NABULIB   #cloned from https://github.com/DJSures/NABU-LIB.git
+TARGET_LIB_DIR=$(LIBNABU)/gen/include
 
 CPPFLAGS+=-I$(TOP)/include
-CPPFLAGS+=-I$(TARGET_LIB_DIR)
+CPPFLAGS+=-I$(TARGET_LIB_DIR) -L$(LIBNABU)/build/cpm -lnabu_cpm
 
 DISKDEF=naburn
 
-NABUCFLAGS = +nabu -vn -DBIN_TYPE=BIN_HOMEBREW --list -m -create-app -compiler=sdcc -Cs--disable-warning -Cs283
+NABUCFLAGS = +nabu -vn -DBIN_TYPE=BIN_HOMEBREW --list -m -create-app -compiler=sdcc -Cs--disable-warning -Cs283 -I$(TARGET_LIB_DIR)  -L$(LIBNABU)/build/nabu -lnabu_hb
+
 
 -include $(TOP)/Make.local
 include $(TOP)/Make.rules

@@ -1,3 +1,4 @@
+#include <string.h>
 //Set all values in the color table to color.
 void vdp_setPatternColor(uint8_t color) {
     vdp_setWriteAddress(_vdpColorTableAddr);

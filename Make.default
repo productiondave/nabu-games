@@ -2,8 +2,9 @@
 
 BASEDIR = $(TOP)
 Z88DIR = $(TOP)/../z88dk-2.5/z88dk
+LIBNABU = $(HOME)/dev/z80/libnabu
 
-CFLAGS = +cpm -DBIN_TYPE=BIN_CPM --list -compiler=sdcc -create-app -O3 --opt-code-speed -Cs--disable-warning -Cs283
+CFLAGS = +cpm -DBIN_TYPE=BIN_CPM --list -compiler=sdcc -create-app -O3 --opt-code-speed -Cs--disable-warning -Cs283 $(INC)
 
 STOREDIR = "/override/this/in/Make.local"
 ISHKURDIR = "/override/this/in/Make.local"

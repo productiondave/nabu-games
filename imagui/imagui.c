@@ -6,7 +6,7 @@
 #define DISABLE_CURSOR
 #define byte uint8_t
 #define ITEMS_PER_PAGE 17
-#define PARENT_ITEMS_PER_PAGE 8   // Must be 8 so the description fits below.
+#define PARENT_ITEMS_PER_PAGE 8   // Must be 8 so the description fits below. // shifts by 3 below assume 8
 
 #include "NABU-LIB.h"
 #include "RetroNET-IAControl.h"
@@ -298,7 +298,7 @@ void update_parent_channels(void) {
 void hilight_channel(void) {
     byte ps = (state == 1) ? PARENT_ITEMS_PER_PAGE : ITEMS_PER_PAGE;
     if (state == 1) {
-        byte new_page = channel_id / PARENT_ITEMS_PER_PAGE + 1;
+        byte new_page = (channel_id >> 3) + 1;
         if (new_page != parent_page_num) {
             parent_page_num = new_page;
             update_parent_channels();
@@ -402,10 +402,10 @@ void load_parent_channels(void) {
     shift(namebuf);
     printAtLocationBuf(31-16,1,namebuf);
     channel_length = ia_getParentCount();
-    parent_num_pages = (channel_length + PARENT_ITEMS_PER_PAGE - 1) / PARENT_ITEMS_PER_PAGE;
+    parent_num_pages = (channel_length + PARENT_ITEMS_PER_PAGE - 1) >> 3;
     if (parent_num_pages == 0) parent_num_pages = 1;
     if (channel_id >= channel_length) channel_id = 0;
-    parent_page_num = channel_id / PARENT_ITEMS_PER_PAGE + 1;
+    parent_page_num = (channel_id >> 3) + 1;
     prev_channel_id = channel_id;
     update_parent_channels();
     hilight_channel();
